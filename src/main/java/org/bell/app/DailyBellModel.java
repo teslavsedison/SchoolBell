@@ -21,14 +21,7 @@ public class DailyBellModel {
             if (beforeIndex == 0)
                 localTimes.add(startTime);
             else {
-                LocalTime tempLectureTime = localTimes.get(localTimes.size() - 1).plusMinutes(lectureTime.getMinute());
-                LocalTime tempBreakThreeMinTime = tempLectureTime.plusMinutes(getBreakTime().getMinute() - 3);
-                LocalTime tempBreakTime = tempBreakThreeMinTime.plusMinutes(getBreakTime().getMinute() - 7);
-                localTimes.add(tempLectureTime);
-                if (beforeIndex != lectureCountBeforeLunch) {
-                    localTimes.add(tempBreakThreeMinTime);
-                    localTimes.add(tempBreakTime);
-                }
+                computeBellTimes(beforeIndex, lectureCountBeforeLunch);
             }
         }
         for (int afterIndex = 0; afterIndex <= lectureCountAfterLunch; afterIndex++) {
@@ -37,17 +30,22 @@ public class DailyBellModel {
                 LocalTime localTime = localTimes.get(localTimes.size() - 1).plusMinutes(min);
                 localTimes.add(localTime);
             } else {
-                LocalTime tempLectureTime = localTimes.get(localTimes.size() - 1).plusMinutes(lectureTime.getMinute());
-                LocalTime tempBreakThreeMinTime = tempLectureTime.plusMinutes(getBreakTime().getMinute() - 3);
-                LocalTime tempBreakTime = tempBreakThreeMinTime.plusMinutes(getBreakTime().getMinute() - 7);
-                localTimes.add(tempLectureTime);
-                if (afterIndex != lectureCountAfterLunch) {
-                    localTimes.add(tempBreakThreeMinTime);
-                    localTimes.add(tempBreakTime);
-                }
+                computeBellTimes(afterIndex, lectureCountAfterLunch);
             }
         }
         return localTimes;
+    }
+    
+
+    private void computeBellTimes(int index, int lectureCount) {
+        LocalTime tempLectureTime = localTimes.get(localTimes.size() - 1).plusMinutes(lectureTime.getMinute());
+        LocalTime tempBreakThreeMinTime = tempLectureTime.plusMinutes(getBreakTime().getMinute() - 3);
+        LocalTime tempBreakTime = tempBreakThreeMinTime.plusMinutes(getBreakTime().getMinute() - 7);
+        localTimes.add(tempLectureTime);
+        if (index != lectureCount) {
+            localTimes.add(tempBreakThreeMinTime);
+            localTimes.add(tempBreakTime);
+        }
     }
 
     public LocalTime getStartTime() {
