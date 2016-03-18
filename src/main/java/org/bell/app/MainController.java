@@ -3,7 +3,6 @@ package org.bell.app;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -51,11 +50,11 @@ public class MainController implements Initializable {
     private Button btnClick;
 
     public void btnClicked(Event event) {
-        btnClick.setText("Hahahah");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Hello Şeko");
-        alert.setHeaderText("TEST");
-        alert.showAndWait();
+//        btnClick.setText("Hahahah");
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setContentText("Hello Şeko");
+//        alert.setHeaderText("TEST");
+//        alert.showAndWait();
 
 
     }
