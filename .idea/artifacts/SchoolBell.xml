@@ -1,0 +1,22 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" build-on-make="true" name="SchoolBell">
+    <output-path>$PROJECT_DIR$/out/artifacts/SchoolBell</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="org.bell.app.Main" />
+        <option name="description" value="" />
+        <option name="htmlParamFile" value="" />
+        <option name="nativeBundle" value="exe" />
+        <option name="paramFile" value="" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="SchoolBell.jar">
+        <element id="module-output" name="SchoolBell" />
+      </element>
+      <element id="library" level="project" name="Maven: org.controlsfx:controlsfx:8.40.10" />
+    </root>
+  </artifact>
+</component>
