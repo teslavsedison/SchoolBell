@@ -1,4 +1,4 @@
-import org.bell.app.DailyBellModel;
+import org.bell.app.DailyBellCalculator;
 import org.junit.Test;
 
 import java.time.LocalTime;
@@ -12,7 +12,7 @@ public class BellModelTest {
 
     @Test
     public void calculateTimesTest() {
-        DailyBellModel bellModel = new DailyBellModel();
+        DailyBellCalculator bellModel = new DailyBellCalculator();
         bellModel.setLectureTime(LocalTime.of(0, 40));
         bellModel.setStartTime(LocalTime.of(8, 0));
         bellModel.setBreakTime(LocalTime.of(0, 10));

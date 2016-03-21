@@ -2,24 +2,25 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="488.0" prefWidth="600.0"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="496.0" prefWidth="361.0"
             xmlns="http://javafx.com/javafx/null" fx:controller="org.bell.app.MainController">
     <center>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
                 <Tab text="Ayarlama">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="445.0" prefWidth="592.0">
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="406.0" prefWidth="405.0">
                             <children>
-                                <Button fx:id="btnClick" layoutX="307.0" layoutY="35.0" mnemonicParsing="false"
-                                        onMouseClicked="#btnClicked" text="Hesapla"/>
-                                <GridPane fx:id="gridPane" layoutX="14.0" layoutY="26.0" prefHeight="369.0"
-                                          prefWidth="281.0">
+                                <Button fx:id="btnClick" layoutX="201.0" layoutY="360.0" mnemonicParsing="false"
+                                        onMouseClicked="#btnClicked" prefHeight="31.0" prefWidth="129.0"
+                                        text="Hesapla"/>
+                                <GridPane fx:id="gridPane" layoutX="14.0" layoutY="25.0" prefHeight="324.0"
+                                          prefWidth="317.0">
                                     <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="222.0" minWidth="10.0"
-                                                           prefWidth="176.0"/>
+                                                           prefWidth="175.0"/>
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="180.0" minWidth="10.0"
-                                                           prefWidth="105.0"/>
+                                                           prefWidth="123.0"/>
                                     </columnConstraints>
                                     <rowConstraints>
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -31,59 +32,57 @@
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                                     </rowConstraints>
                                     <children>
-                                        <Label text="Başlama Saati"/>
-                                        <Label text="Ders süresi" GridPane.rowIndex="1"/>
-                                        <Label text="Teneffüs süresi" GridPane.rowIndex="2"/>
-                                        <Label text="Öğleye kadar ders sayısı" GridPane.rowIndex="3"/>
-                                        <Label text="Öğle arası süresi" GridPane.rowIndex="4"/>
-                                        <Label text="Öğleden sonra ders sayısı" GridPane.rowIndex="5"/>
-                                        <Label text="Öğrenci zili" GridPane.rowIndex="6"/>
-                                        <TextField fx:id="startTime" GridPane.columnIndex="1"/>
-                                        <TextField fx:id="lectureTime" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                                        <TextField fx:id="breakTime" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                                        <TextField fx:id="lectureCountBeforeLunch" prefWidth="156.0"
-                                                   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                        <TextField fx:id="lunchBreakTime" GridPane.columnIndex="1"
-                                                   GridPane.rowIndex="4"/>
-                                        <TextField fx:id="lectureCountAfterLunch" GridPane.columnIndex="1"
+                                        <Label text="Gün"/>
+                                        <Label text="Başlama Saati" GridPane.rowIndex="1"/>
+                                        <Label text="Ders süresi" GridPane.rowIndex="2"/>
+                                        <Label text="Teneffüs süresi" GridPane.rowIndex="3"/>
+                                        <Label text="Öğleye kadar ders sayısı" GridPane.rowIndex="4"/>
+                                        <Label text="Öğle arası süresi" GridPane.rowIndex="5"/>
+                                        <Label text="Öğleden sonra ders sayısı" GridPane.rowIndex="6"/>
+                                        <ComboBox fx:id="cbDayList" prefHeight="31.0" prefWidth="126.0"
+                                                  promptText="Seçiniz" GridPane.columnIndex="1">
+                                        </ComboBox>
+                                        <TextField fx:id="startTimeField" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="1"/>
+                                        <TextField fx:id="lectureTimeField" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="2"/>
+                                        <TextField fx:id="breakTimeField" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="3"/>
+                                        <TextField fx:id="lectureCountBeforeLunchField" prefWidth="156.0"
+                                                   GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                        <TextField fx:id="lunchBreakTimeField" GridPane.columnIndex="1"
                                                    GridPane.rowIndex="5"/>
-                                        <TextField fx:id="endTime" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                        <TextField fx:id="lectureCountAfterLunch" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="6"/>
+
                                     </children>
                                 </GridPane>
-                                <TableView layoutX="307.0" layoutY="79.0" prefHeight="306.0" prefWidth="270.0">
-                                    <columns>
-                                        <TableColumn prefWidth="75.0" text="C1"/>
-                                        <TableColumn prefWidth="75.0" text="C2"/>
-                                    </columns>
-                                </TableView>
+                                <Button fx:id="btnSelectMp3" layoutX="14.0" layoutY="360.0" mnemonicParsing="false"
+                                        prefHeight="31.0" prefWidth="125.0" text="Zil Sesi Seç"/>
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Untitled Tab 2">
+                <Tab text="Zil Saatleri">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <ListView layoutX="22.0" layoutY="65.0" prefHeight="325.0" prefWidth="200.0"/>
+                                <ComboBox layoutX="22.0" layoutY="24.0" prefHeight="31.0" prefWidth="203.0"/>
+                                <Button layoutX="225.0" layoutY="65.0" mnemonicParsing="false" text="Seçili günü sil"/>
+                            </children>
+                        </AnchorPane>
                     </content>
                 </Tab>
             </tabs>
         </TabPane>
     </center>
     <top>
-        <MenuBar BorderPane.alignment="CENTER">
+        <MenuBar prefHeight="0.0" prefWidth="354.0" BorderPane.alignment="CENTER">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="School Bell">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About"/>
+                        <MenuItem onAction="#showAbout" mnemonicParsing="false" text="Hakkında"/>
                     </items>
                 </Menu>
             </menus>

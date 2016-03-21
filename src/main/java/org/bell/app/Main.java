@@ -7,10 +7,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Locale;
 
 public class Main extends Application {
+
+    Scheduler scheduler;
 
     public static void main(String[] args) {
         launch(args);
@@ -18,12 +24,40 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        JobDetail job = JobBuilder.newJob(BellRingJob.class)
+                .withIdentity("BellRingJobName", "BellRingGroup").build();
+
+        Trigger trigger = TriggerBuilder
+                .newTrigger()
+                .withIdentity("BellRingTrigger", "BellRingGroup")
+                .withSchedule(SimpleScheduleBuilder
+                        .repeatMinutelyForever()
+                        .withIntervalInSeconds(60)
+                        .repeatForever())
+                .startAt(Date.from(Instant.now()))
+                .build();
+
+        //schedule it
+        scheduler = new StdSchedulerFactory().getScheduler();
+        scheduler.start();
+        scheduler.scheduleJob(job, trigger);
+
+
         Localization.setLocale(new Locale("tr-TR"));
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/MainView.fxml"));
         primaryStage.setTitle("School Bell");
         primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("bell1.png")));
-        primaryStage.setScene(new Scene(root, 1000, 800));
+        Scene scene = new Scene(root, 380, 500);
+        primaryStage.setResizable(false);
+        primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        scheduler.shutdown();
+        super.stop();
     }
 }
 

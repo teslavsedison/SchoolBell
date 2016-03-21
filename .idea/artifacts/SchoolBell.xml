@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" build-on-make="true" name="SchoolBell">
+  <artifact type="javafx" name="SchoolBell">
     <output-path>$PROJECT_DIR$/out/artifacts/SchoolBell</output-path>
     <properties id="javafx-properties">
       <options>

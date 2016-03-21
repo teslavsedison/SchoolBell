@@ -2,9 +2,8 @@ package org.bell.app;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 
-public class DailyBellModel {
+public class DailyBellCalculator {
 
     private LocalTime startTime;
     private LocalTime lectureTime;// = new SimpleStringProperty();
@@ -14,12 +13,13 @@ public class DailyBellModel {
     private int lectureCountAfterLunch;// = new SimpleIntegerProperty();
 
 
-    private List<LocalTime> localTimes = new ArrayList<>();
+    private ArrayList<LocalTime> localTimes = new ArrayList<>();
 
-    public List<LocalTime> calculateBellTime() {
+    public ArrayList<LocalTime> calculateBellTime() {
         for (int beforeIndex = 0; beforeIndex <= lectureCountBeforeLunch; beforeIndex++) {
-            if (beforeIndex == 0)
+            if (beforeIndex == 0) {
                 localTimes.add(startTime);
+            }
             else {
                 computeBellTimes(beforeIndex, lectureCountBeforeLunch);
             }
@@ -35,7 +35,6 @@ public class DailyBellModel {
         }
         return localTimes;
     }
-    
 
     private void computeBellTimes(int index, int lectureCount) {
         LocalTime tempLectureTime = localTimes.get(localTimes.size() - 1).plusMinutes(lectureTime.getMinute());
