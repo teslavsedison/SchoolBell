@@ -7,6 +7,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.bell.entity.DayName;
+import org.bell.entity.SchoolDay;
+import org.bell.framework.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -43,7 +48,7 @@ public class Main extends Application {
         scheduler.start();
         scheduler.scheduleJob(job, trigger);
 
-
+        setDb();
         Localization.setLocale(new Locale("tr-TR"));
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/MainView.fxml"));
         primaryStage.setTitle("School Bell");
@@ -54,9 +59,73 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    private void setDb() {
+        Session session = HibernateUtil
+                .getSessionFactory()
+                .openSession();
+
+        session.beginTransaction().begin();
+        Object result = null;
+        result = session.createCriteria(SchoolDay.class)
+                .add(Restrictions.eq("dayName", DayName.MONDAY))
+                .uniqueResult();
+        if (result == null) {
+            SchoolDay schoolDay = new SchoolDay();
+            schoolDay.setDayName(DayName.MONDAY);
+            session.save(schoolDay);
+        }
+        session.beginTransaction().commit();
+
+        session.beginTransaction().begin();
+        result = session.createCriteria(SchoolDay.class)
+                .add(Restrictions.eq("dayName", DayName.TUESDAY))
+                .uniqueResult();
+        if (result == null) {
+            SchoolDay schoolDay = new SchoolDay();
+            schoolDay.setDayName(DayName.TUESDAY);
+            session.save(schoolDay);
+        }
+        session.beginTransaction().commit();
+
+        session.beginTransaction().begin();
+        result = session.createCriteria(SchoolDay.class)
+                .add(Restrictions.eq("dayName", DayName.WEDNESDAY))
+                .uniqueResult();
+        if (result == null) {
+            SchoolDay schoolDay = new SchoolDay();
+            schoolDay.setDayName(DayName.WEDNESDAY);
+            session.save(schoolDay);
+        }
+        session.beginTransaction().commit();
+
+        session.beginTransaction().begin();
+        result = session.createCriteria(SchoolDay.class)
+                .add(Restrictions.eq("dayName", DayName.THURSDAY))
+                .uniqueResult();
+        if (result == null) {
+            SchoolDay schoolDay = new SchoolDay();
+            schoolDay.setDayName(DayName.THURSDAY);
+            session.save(schoolDay);
+        }
+        session.beginTransaction().commit();
+
+        session.beginTransaction().begin();
+        result = session.createCriteria(SchoolDay.class)
+                .add(Restrictions.eq("dayName", DayName.FRIDAY))
+                .uniqueResult();
+        if (result == null) {
+            SchoolDay schoolDay = new SchoolDay();
+            schoolDay.setDayName(DayName.FRIDAY);
+            session.save(schoolDay);
+        }
+        session.beginTransaction().commit();
+        session.close();
+    }
+
     @Override
     public void stop() throws Exception {
         scheduler.shutdown();
+        HibernateUtil.shutdown();
         super.stop();
     }
 }

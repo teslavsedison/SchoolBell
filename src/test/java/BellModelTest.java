@@ -1,4 +1,5 @@
 import org.bell.app.DailyBellCalculator;
+import org.bell.entity.BellTime;
 import org.junit.Test;
 
 import java.time.LocalTime;
@@ -19,8 +20,8 @@ public class BellModelTest {
         bellModel.setLectureCountBeforeLunch(5);
         bellModel.setLunchBreakTime(LocalTime.of(1, 0));
         bellModel.setLectureCountAfterLunch(4);
-        List<LocalTime> localTimes = bellModel.calculateBellTime();
-        for (LocalTime t : localTimes) {
+        List<BellTime> localTimes = bellModel.calculateBellTime();
+        for (BellTime t : localTimes) {
             System.out.println(t.toString());
         }
     }

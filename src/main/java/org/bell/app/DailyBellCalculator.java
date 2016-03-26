@@ -1,5 +1,7 @@
 package org.bell.app;
 
+import org.bell.entity.BellTime;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -13,12 +15,17 @@ public class DailyBellCalculator {
     private int lectureCountAfterLunch;// = new SimpleIntegerProperty();
 
 
-    private ArrayList<LocalTime> localTimes = new ArrayList<>();
+    private ArrayList<BellTime> localTimes = new ArrayList<>();
 
-    public ArrayList<LocalTime> calculateBellTime() {
+    public ArrayList<BellTime> calculateBellTime() {
         for (int beforeIndex = 0; beforeIndex <= lectureCountBeforeLunch; beforeIndex++) {
             if (beforeIndex == 0) {
-                localTimes.add(startTime);
+                BellTime btStudent = new BellTime();
+                btStudent.setTime(startTime.minusMinutes(3));
+                localTimes.add(btStudent);
+                BellTime bt = new BellTime();
+                bt.setTime(startTime);
+                localTimes.add(bt);
             }
             else {
                 computeBellTimes(beforeIndex, lectureCountBeforeLunch);
@@ -27,8 +34,13 @@ public class DailyBellCalculator {
         for (int afterIndex = 0; afterIndex <= lectureCountAfterLunch; afterIndex++) {
             if (afterIndex == 0) {
                 int min = lunchBreakTime.getMinute() + lunchBreakTime.getHour() * 60;
-                LocalTime localTime = localTimes.get(localTimes.size() - 1).plusMinutes(min);
-                localTimes.add(localTime);
+                LocalTime localTime = localTimes.get(localTimes.size() - 1).getTime().plusMinutes(min);
+                BellTime btStudent = new BellTime();
+                btStudent.setTime(localTime.minusMinutes(3));
+                localTimes.add(btStudent);
+                BellTime bt = new BellTime();
+                bt.setTime(localTime);
+                localTimes.add(bt);
             } else {
                 computeBellTimes(afterIndex, lectureCountAfterLunch);
             }
@@ -37,13 +49,19 @@ public class DailyBellCalculator {
     }
 
     private void computeBellTimes(int index, int lectureCount) {
-        LocalTime tempLectureTime = localTimes.get(localTimes.size() - 1).plusMinutes(lectureTime.getMinute());
+        LocalTime tempLectureTime = localTimes.get(localTimes.size() - 1).getTime().plusMinutes(lectureTime.getMinute());
         LocalTime tempBreakThreeMinTime = tempLectureTime.plusMinutes(getBreakTime().getMinute() - 3);
         LocalTime tempBreakTime = tempBreakThreeMinTime.plusMinutes(getBreakTime().getMinute() - 7);
-        localTimes.add(tempLectureTime);
+        BellTime btLecture = new BellTime();
+        btLecture.setTime(tempLectureTime);
+        localTimes.add(btLecture);
         if (index != lectureCount) {
-            localTimes.add(tempBreakThreeMinTime);
-            localTimes.add(tempBreakTime);
+            BellTime btBreakThreeMin = new BellTime();
+            btBreakThreeMin.setTime(tempBreakThreeMinTime);
+            localTimes.add(btBreakThreeMin);
+            BellTime btBreak = new BellTime();
+            btBreak.setTime(tempBreakTime);
+            localTimes.add(btBreak);
         }
     }
 

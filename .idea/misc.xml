@@ -3,7 +3,7 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
-  <component name="FrameworkDetectionExcludesConfiguration">
+  <component name="FrameworkDetectionExcludesConfiguration" detection-enabled="false">
     <type id="hibernate" />
   </component>
   <component name="MavenProjectsManager">

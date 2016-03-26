@@ -5,7 +5,8 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="496.0" prefWidth="361.0"
             xmlns="http://javafx.com/javafx/null" fx:controller="org.bell.app.MainController">
     <center>
-        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane fx:id="tabMain" prefHeight="200.0" prefWidth="200.0"
+                 tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
                 <Tab text="Ayarlama">
                     <content>
@@ -67,9 +68,12 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <ListView layoutX="22.0" layoutY="65.0" prefHeight="325.0" prefWidth="200.0"/>
-                                <ComboBox layoutX="22.0" layoutY="24.0" prefHeight="31.0" prefWidth="203.0"/>
-                                <Button layoutX="225.0" layoutY="65.0" mnemonicParsing="false" text="Seçili günü sil"/>
+                                <ListView fx:id="lvTimes" layoutX="22.0" layoutY="65.0" prefHeight="325.0"
+                                          prefWidth="200.0"/>
+                                <ComboBox fx:id="cbDayList2" promptText="Seçiniz" layoutX="22.0" layoutY="24.0"
+                                          prefHeight="31.0" prefWidth="203.0"/>
+                                <Button onMouseClicked="#deleteSelectedSchoolDay" layoutX="225.0" layoutY="65.0"
+                                        mnemonicParsing="false" text="Seçili günü sil"/>
                             </children>
                         </AnchorPane>
                     </content>
