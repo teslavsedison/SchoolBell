@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="1742575111">
+    <data-source source="LOCAL" name="H2 - jdbc:h2:E:/Java Projects/SchoolBell/src/main/java/org/bell/app\Session session = HibernateUtil.getSessionFactory().openSession();" uuid="e97c9d7c-9e68-4453-ad46-ba8adf796dab">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:$PROJECT_DIR$/src/main/java/org/bell/app\Session session = HibernateUtil.getSessionFactory().openSession();</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="H2 - SchoolBellDb.mv.db" uuid="7d52f266-2bbb-43f1-9391-90e0444ec6ef">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:$PROJECT_DIR$/../SchoolBell\Data\SchoolBellDb.mv.db</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="hibernate.cfg.xml/Hibernate" uuid="28506664-85ad-4644-98af-cf0657a9f20b">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml</remarks>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:derby:./Data/SchoolBellDb;create=true</jdbc-url>
+    </data-source>
+  </component>
+</project>

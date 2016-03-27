@@ -10,18 +10,13 @@ import javafx.stage.Stage;
 import org.bell.entity.DayName;
 import org.bell.entity.SchoolDay;
 import org.bell.framework.HibernateUtil;
+import org.bell.framework.SchedulerUtil;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.Locale;
 
 public class Main extends Application {
-
-    Scheduler scheduler;
 
     public static void main(String[] args) {
         launch(args);
@@ -29,25 +24,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        JobDetail job = JobBuilder.newJob(BellRingJob.class)
-                .withIdentity("BellRingJobName", "BellRingGroup").build();
-
-        Trigger trigger = TriggerBuilder
-                .newTrigger()
-                .withIdentity("BellRingTrigger", "BellRingGroup")
-                .withSchedule(SimpleScheduleBuilder
-                        .repeatMinutelyForever()
-                        .withIntervalInSeconds(60)
-                        .repeatForever())
-                .startAt(Date.from(Instant.now()))
-                .build();
-
-        //schedule it
-        scheduler = new StdSchedulerFactory().getScheduler();
-        scheduler.start();
-        scheduler.scheduleJob(job, trigger);
-
+        SchedulerUtil.configure();
         setDb();
         Localization.setLocale(new Locale("tr-TR"));
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/MainView.fxml"));
@@ -124,7 +101,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        scheduler.shutdown();
+        SchedulerUtil.shutdown();
         HibernateUtil.shutdown();
         super.stop();
     }

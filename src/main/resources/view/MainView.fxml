@@ -58,7 +58,8 @@
 
                                     </children>
                                 </GridPane>
-                                <Button fx:id="btnSelectMp3" layoutX="14.0" layoutY="360.0" mnemonicParsing="false"
+                                <Button fx:id="btnSelectMp3" onMouseClicked="#selectMp3" layoutX="14.0" layoutY="360.0"
+                                        mnemonicParsing="false"
                                         prefHeight="31.0" prefWidth="125.0" text="Zil Sesi Seç"/>
                             </children>
                         </AnchorPane>

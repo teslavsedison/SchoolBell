@@ -7,8 +7,8 @@ import java.time.LocalTime;
  * Created by hkn on 17.03.2016.
  */
 
-@Entity
-@Table(name = "BellTime")
+@Entity()
+@Table(name = "BellTime", schema = "bell")
 public class BellTime {
 
     @Id
@@ -22,7 +22,7 @@ public class BellTime {
     @Column(name = "Description", length = 500)
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SchoolDayId", nullable = false)
     private SchoolDay schoolDay;
 
@@ -51,9 +51,7 @@ public class BellTime {
     }
     @Override
     public String toString() {
-        if (time != null)
-            return String.valueOf(time);
-        return "";
+        return time.toString();
     }
 
 

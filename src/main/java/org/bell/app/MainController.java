@@ -1,6 +1,5 @@
 package org.bell.app;
 
-import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,6 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import org.bell.dao.SchoolBellDao;
 import org.bell.entity.BellTime;
 import org.bell.entity.FileNameConstants;
 import org.bell.entity.SchoolDay;
@@ -28,23 +28,18 @@ import org.controlsfx.validation.Validator;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.file.Files;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
+
+import static javafx.scene.control.Alert.AlertType;
 
 public class MainController implements Initializable {
-    //private static String BELL_TIMES_FILE_NAME = "BellPlan.json";
-    public static final Type LOCAL_TIME_TYPE = new TypeToken<LocalTime>() {
-    }.getType();
     @FXML
     public ComboBox<SchoolDay> cbDayList;
-    //    @FXML
-//    public ListView lvTimes;
     @FXML
     public Button btnSelectMp3;
     @FXML
@@ -64,36 +59,26 @@ public class MainController implements Initializable {
     @FXML
     public TabPane tabMain;
     @FXML
-    public ListView lvTimes;
+    public ListView<BellTime> lvTimes;
     @FXML
-    public ComboBox cbDayList2;
-
+    public ComboBox<SchoolDay> cbDayList2;
+    SchoolBellDao dao = null;// = new SchoolBellDao();
     @FXML
     private Button btnClick;
-
-    private File file;
     private ValidationSupport validationSupport;
-    private Set<SchoolDay> schoolDays;
-    private ObservableList<SchoolDay> dayList;
+    private List<SchoolDay> schoolDaysComputed;
+    private List<SchoolDay> schoolDaysNotComputed;
 
     public void btnClicked(Event event) {
         if (!validationSupport.isInvalid()) {
             DailyBellCalculator dailyBellCalculator = setCalculator();
-            SchoolDay sd = new SchoolDay();
-            if (schoolDays.size() < 6) {
-                SchoolDay selectedItem = cbDayList.getSelectionModel().getSelectedItem();
-                sd.setDayName(selectedItem.getDayName());
-                sd.setBellTimes(dailyBellCalculator.calculateBellTime());
-                schoolDays.add(sd);
-                cbDayList.getItems().remove(selectedItem);
-                cbDayList2.getItems().add(selectedItem);
-            }
-            ObservableList<BellTime> list = FXCollections.observableArrayList();
-            list.addAll(sd.getBellTimes());
-//            lvTimes.setItems(list);
-//            jsonProcesses(schoolDays);
+            SchoolDay selectedItem = cbDayList.getSelectionModel().getSelectedItem();
+            selectedItem.getBellTimes().addAll(dailyBellCalculator.calculateBellTime());
+            selectedItem.getBellTimes().forEach(bellTime -> bellTime.setSchoolDay(selectedItem));
+            dao.save(selectedItem);
+            setCbDataSources();
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
+            Alert alert = new Alert(AlertType.WARNING);
             Stage alartStage = (Stage) alert.getDialogPane().getScene().getWindow();
             alartStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("bell1.png")));
             alert.setTitle("Dikkat");
@@ -114,7 +99,6 @@ public class MainController implements Initializable {
         return dailyBellCalculator;
     }
 
-
     private void generateFile(String name, byte[] bytes) throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(name);
         //OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream,"UTF-8");
@@ -128,46 +112,55 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         DropShadow shadow = new DropShadow();
         validationSupport = new ValidationSupport();
-        cbDayList2.setItems(FXCollections.observableArrayList());
-        schoolDays = new HashSet<>();
+        dao = new SchoolBellDao();
+        setCbDataSources();
         buttonDropShadowEffect(shadow);
-
-        btnSelectMp3.setOnMouseClicked(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Bir mp3 seçiniz");
-            fileChooser.getExtensionFilters().add(new ExtensionFilter("Audio Files", "*.mp3"));
-            file = fileChooser.showOpenDialog(gridPane.getScene().getWindow());
-            try {
-                if (file != null) {
-                    byte[] bytes = Files.readAllBytes(file.toPath());
-                    generateFile(FileNameConstants.MP3_FILE_NAME, bytes);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
 
         tabMain.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
+                    cbDayList2.getSelectionModel().clearSelection();
+                    cbDayList.getSelectionModel().clearSelection();
+                    lvTimes.getItems().clear();
+                    setCbDataSources();
 
                 });
 
         cbDayList2.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-//                    ArrayList<SchoolDay> schoolDays = JsonFileHelper.getSchoolDays();
-                    for (SchoolDay sd : schoolDays) {
+                    ///ArrayList<SchoolDay> daoSchoolDays = dao.getSchoolDays();
+//                    for (SchoolDay sd : daoSchoolDays) {
                         ObservableList<BellTime> sds = null;
-                        if (sd.getDayName().equals(newValue)) {
-                            sds = FXCollections.observableArrayList(sd.getBellTimes());
-                            lvTimes.setItems(sds);
-                        }
+//                        if (sd.getDayName().equals(newValue.getDayName()))
+// {
+                    if (newValue != null) {
+                        List<BellTime> bellTimes = newValue.getBellTimes();
+                        sds = FXCollections.observableArrayList(bellTimes);
+                        lvTimes.setItems(sds);
                     }
+//                        }
+//                    }
                 });
 
         setFormatters();
         setValidations();
+    }
+
+    private void setCbDataSources() {
+        schoolDaysNotComputed = dao.getSchoolDaysNotComputed();
+        schoolDaysComputed = dao.getSchoolDays();
+
+        if (schoolDaysNotComputed != null && !schoolDaysNotComputed.isEmpty()) {
+            cbDayList.setItems(FXCollections.observableArrayList(schoolDaysNotComputed));
+        } else {
+            cbDayList.setItems(FXCollections.observableArrayList());
+        }
+        if (schoolDaysComputed != null && !schoolDaysComputed.isEmpty()) {
+            cbDayList2.setItems(FXCollections.observableArrayList(schoolDaysComputed));
+        } else {
+            cbDayList2.setItems(FXCollections.observableArrayList());
+        }
     }
 
 
@@ -205,20 +198,8 @@ public class MainController implements Initializable {
         });
     }
 
-    private void setDays2() {
-        ObservableList<String> dayList2 = FXCollections.observableArrayList();
-        ArrayList<SchoolDay> schoolDays = null;
-        //dayList.addAll(DayName.MONDAY, DayName.TUESDAY, DayName.WEDNESDAY, DayName.THURSDAY, DayName.FRIDAY);
-        if (schoolDays != null) {
-            for (SchoolDay sd : schoolDays) {
-                dayList2.add(sd.getDayName());
-            }
-            cbDayList2.setItems(dayList2);
-        }
-    }
-
     public void showAbout(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(AlertType.INFORMATION);
         Stage alartStage = (Stage) alert.getDialogPane().getScene().getWindow();
         alartStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("bell1.png")));
         alert.setTitle("Okul zili");
@@ -231,17 +212,41 @@ public class MainController implements Initializable {
     }
 
     public void deleteSelectedSchoolDay(Event event) {
-        String selected = (String) cbDayList2.getSelectionModel().getSelectedItem();
+        SchoolDay selected = cbDayList2.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            ArrayList<SchoolDay> schoolDays = null;// = JsonFileHelper.getSchoolDays();
-            for (int index = 0; index < schoolDays.size(); index++) {
-                if (schoolDays.get(index).getDayName().equals(selected)) {
-                    SchoolDay sd = schoolDays.remove(index);
-//                    jsonProcesses(schoolDays);
-                    setDays2();
-                    //cbDayList.getItems().add(sd.getDayName());
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Dikkat");
+            alert.setHeaderText("Silme uyarısı");
+            alert.setContentText(selected.getDayName() + " gününe ait zil tanımlamamaları silinecek onaylıyor musunuz?");
+            Optional<ButtonType> buttonType = alert.showAndWait();
+            if (buttonType.isPresent() && buttonType.get() == ButtonType.OK) {
+                if (selected != null) {
+                    dao.clearSchoolDaysBellTime(selected);
+                    lvTimes.getItems().clear();
+                    setCbDataSources();
                 }
             }
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Dikkat");
+            alert.setHeaderText("Gün seçiniz");
+            alert.setContentText("Simek için önce bir gün seçimi yapınız");
+            alert.show();
+        }
+    }
+
+    public void selectMp3(Event event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Bir mp3 seçiniz");
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("Audio Files", "*.mp3"));
+        File file = fileChooser.showOpenDialog(gridPane.getScene().getWindow());
+        try {
+            if (file != null) {
+                byte[] bytes = Files.readAllBytes(file.toPath());
+                generateFile(FileNameConstants.MP3_FILE_NAME, bytes);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

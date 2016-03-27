@@ -1,23 +1,28 @@
 package org.bell.entity;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
-@Table(name = "SchoolDay")
+@Table(name = "SchoolDay", schema = "bell")
 public class SchoolDay {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "SchoolDayId", unique = true, nullable = false)
     private int id;
 
-    @Column(name = "DayName")
+    @Column(name = "DayName", length = 100)
     private String dayName;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "schoolDay")
-    private List<BellTime> bellTimes = new ArrayList<>(0);
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "schoolDay", targetEntity = BellTime.class)
+    @Cascade({CascadeType.MERGE, CascadeType.DELETE, CascadeType.PERSIST})
+    private List<BellTime> bellTimes = new ArrayList<>();
 
     public String getDayName() {
         return dayName;
@@ -26,6 +31,7 @@ public class SchoolDay {
     public void setDayName(String dayName) {
         this.dayName = dayName;
     }
+
 
     public List<BellTime> getBellTimes() {
         return bellTimes;
