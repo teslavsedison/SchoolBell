@@ -24,13 +24,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        SchedulerUtil.configure();
         setDb();
         Localization.setLocale(new Locale("tr-TR"));
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/MainView.fxml"));
-        primaryStage.setTitle("School Bell");
+        primaryStage.setTitle("Okul Zili");
         primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("bell1.png")));
-        Scene scene = new Scene(root, 380, 500);
+        Scene scene = new Scene(root, 400, 520);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();

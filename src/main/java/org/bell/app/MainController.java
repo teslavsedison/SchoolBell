@@ -20,17 +20,23 @@ import org.bell.entity.BellTime;
 import org.bell.entity.FileNameConstants;
 import org.bell.entity.SchoolDay;
 import org.bell.framework.IntegerRangeValidator;
+import org.bell.framework.SchedulerUtil;
 import org.bell.framework.TimeHHMMValidator;
 import org.bell.framework.TimeToStringConverter;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.Instant;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -62,12 +68,75 @@ public class MainController implements Initializable {
     public ListView<BellTime> lvTimes;
     @FXML
     public ComboBox<SchoolDay> cbDayList2;
-    SchoolBellDao dao = null;// = new SchoolBellDao();
+    @FXML
+    public Button btnStart;
+    @FXML
+    public Button btnStop;
     @FXML
     private Button btnClick;
+
+    private SchoolBellDao dao = null;
     private ValidationSupport validationSupport;
     private List<SchoolDay> schoolDaysComputed;
     private List<SchoolDay> schoolDaysNotComputed;
+    private JobDetail job;
+    private Scheduler scheduler;
+    private SimpleTrigger trigger;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+
+        job = JobBuilder.newJob(BellRingJob.class)
+                .withIdentity("BellRingJobName", "BellRingGroup")
+                .build();
+
+        trigger = TriggerBuilder
+                .newTrigger()
+                .withIdentity("BellRingTrigger", "BellRingGroup")
+                .withSchedule(SimpleScheduleBuilder
+                        .repeatMinutelyForever()
+                        .withIntervalInSeconds(60)
+                        .repeatForever())
+                .startAt(Date.from(Instant.now()))
+                .build();
+        try {
+            scheduler = new StdSchedulerFactory().getScheduler();
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+
+        DropShadow shadow = new DropShadow();
+        validationSupport = new ValidationSupport();
+        btnStop.setDisable(true);
+
+        dao = new SchoolBellDao();
+        setCbDataSources();
+        buttonDropShadowEffect(shadow);
+
+        tabMain.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    cbDayList2.getSelectionModel().clearSelection();
+                    cbDayList.getSelectionModel().clearSelection();
+                    lvTimes.getItems().clear();
+                    setCbDataSources();
+                });
+
+        cbDayList2.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    ObservableList<BellTime> sds = null;
+                    if (newValue != null) {
+                        List<BellTime> bellTimes = newValue.getBellTimes();
+                        sds = FXCollections.observableArrayList(bellTimes);
+                        lvTimes.setItems(sds);
+                    }
+                });
+
+        setFormatter();
+        setValidations();
+    }
 
     public void btnClicked(Event event) {
         if (!validationSupport.isInvalid()) {
@@ -79,8 +148,8 @@ public class MainController implements Initializable {
             setCbDataSources();
         } else {
             Alert alert = new Alert(AlertType.WARNING);
-            Stage alartStage = (Stage) alert.getDialogPane().getScene().getWindow();
-            alartStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("bell1.png")));
+            Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+            alertStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("bell1.png")));
             alert.setTitle("Dikkat");
             alert.setHeaderText("Doğrulama Hatası!");
             alert.setContentText("Lütfen bütün alanların doğru girildiğine emin olunuz.");
@@ -101,50 +170,8 @@ public class MainController implements Initializable {
 
     private void generateFile(String name, byte[] bytes) throws IOException {
         FileOutputStream fileOutputStream = new FileOutputStream(name);
-        //OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream,"UTF-8");
-//        RandomAccessFile randomAccessFile = new RandomAccessFile(name, "rw");
-//        randomAccessFile.seek(randomAccessFile.);
         fileOutputStream.write(bytes);
         fileOutputStream.close();
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        DropShadow shadow = new DropShadow();
-        validationSupport = new ValidationSupport();
-        dao = new SchoolBellDao();
-        setCbDataSources();
-        buttonDropShadowEffect(shadow);
-
-        tabMain.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    cbDayList2.getSelectionModel().clearSelection();
-                    cbDayList.getSelectionModel().clearSelection();
-                    lvTimes.getItems().clear();
-                    setCbDataSources();
-
-                });
-
-        cbDayList2.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    ///ArrayList<SchoolDay> daoSchoolDays = dao.getSchoolDays();
-//                    for (SchoolDay sd : daoSchoolDays) {
-                        ObservableList<BellTime> sds = null;
-//                        if (sd.getDayName().equals(newValue.getDayName()))
-// {
-                    if (newValue != null) {
-                        List<BellTime> bellTimes = newValue.getBellTimes();
-                        sds = FXCollections.observableArrayList(bellTimes);
-                        lvTimes.setItems(sds);
-                    }
-//                        }
-//                    }
-                });
-
-        setFormatters();
-        setValidations();
     }
 
     private void setCbDataSources() {
@@ -163,8 +190,7 @@ public class MainController implements Initializable {
         }
     }
 
-
-    private void setFormatters() {
+    private void setFormatter() {
         TextFormatter<LocalTime> tf1 = new TextFormatter<>(new TimeToStringConverter());
         TextFormatter<LocalTime> tf2 = new TextFormatter<>(new TimeToStringConverter());
         TextFormatter<LocalTime> tf3 = new TextFormatter<>(new TimeToStringConverter());
@@ -248,6 +274,27 @@ public class MainController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void btnStartClicked(Event event) throws SchedulerException {
+        if (Files.exists(Paths.get(FileNameConstants.MP3_FILE_NAME))) {
+            SchedulerUtil.configure();
+            SchedulerUtil.start();
+            btnStart.setDisable(true);
+            btnStop.setDisable(false);
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Dikkat");
+            alert.setHeaderText("Mp3 Seçimi");
+            alert.setContentText("Zil için gereken Mp3 dosyasını seçiniz");
+            alert.show();
+        }
+    }
+
+    public void btnStopClicked(Event event) throws SchedulerException {
+        btnStart.setDisable(false);
+        btnStop.setDisable(true);
+        SchedulerUtil.pause();
     }
 }
 

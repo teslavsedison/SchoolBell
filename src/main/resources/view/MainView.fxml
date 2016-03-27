@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="496.0" prefWidth="361.0"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="524.0" prefWidth="361.0"
             xmlns="http://javafx.com/javafx/null" fx:controller="org.bell.app.MainController">
     <center>
-        <TabPane fx:id="tabMain" prefHeight="200.0" prefWidth="200.0"
-                 tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane fx:id="tabMain" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
+                 BorderPane.alignment="CENTER">
             <tabs>
                 <Tab text="Ayarlama">
                     <content>
@@ -58,9 +59,24 @@
 
                                     </children>
                                 </GridPane>
-                                <Button fx:id="btnSelectMp3" onMouseClicked="#selectMp3" layoutX="14.0" layoutY="360.0"
-                                        mnemonicParsing="false"
-                                        prefHeight="31.0" prefWidth="125.0" text="Zil Sesi Seç"/>
+                                <Button fx:id="btnSelectMp3" layoutX="14.0" layoutY="360.0" mnemonicParsing="false"
+                                        onMouseClicked="#selectMp3" prefHeight="31.0" prefWidth="125.0"
+                                        text="Zil Sesi Seç"/>
+                                <Button fx:id="btnStart" alignment="CENTER" layoutX="14.0" layoutY="408.0"
+                                        mnemonicParsing="false" onMouseClicked="#btnStartClicked" prefHeight="31.0"
+                                        prefWidth="127.0" text="Başlat" textOverrun="CLIP">
+                                    <effect>
+                                        <DropShadow color="#0e9bff" radius="17.775" spread="0.43" width="52.1"/>
+                                    </effect>
+                                </Button>
+                                <Button fx:id="btnStop" alignment="CENTER" layoutX="201.0" layoutY="408.0"
+                                        mnemonicParsing="false" onMouseClicked="#btnStopClicked" prefHeight="31.0"
+                                        prefWidth="131.0" text="Durdur">
+                                    <effect>
+                                        <DropShadow color="#d71a59" radius="16.997500000000002" spread="0.48"
+                                                    width="48.99"/>
+                                    </effect>
+                                </Button>
                             </children>
                         </AnchorPane>
                     </content>
@@ -71,10 +87,10 @@
                             <children>
                                 <ListView fx:id="lvTimes" layoutX="22.0" layoutY="65.0" prefHeight="325.0"
                                           prefWidth="200.0"/>
-                                <ComboBox fx:id="cbDayList2" promptText="Seçiniz" layoutX="22.0" layoutY="24.0"
-                                          prefHeight="31.0" prefWidth="203.0"/>
-                                <Button onMouseClicked="#deleteSelectedSchoolDay" layoutX="225.0" layoutY="65.0"
-                                        mnemonicParsing="false" text="Seçili günü sil"/>
+                                <ComboBox fx:id="cbDayList2" layoutX="22.0" layoutY="24.0" prefHeight="31.0"
+                                          prefWidth="203.0" promptText="Seçiniz"/>
+                                <Button layoutX="225.0" layoutY="65.0" mnemonicParsing="false"
+                                        onMouseClicked="#deleteSelectedSchoolDay" text="Seçili günü sil"/>
                             </children>
                         </AnchorPane>
                     </content>
@@ -85,9 +101,9 @@
     <top>
         <MenuBar prefHeight="0.0" prefWidth="354.0" BorderPane.alignment="CENTER">
             <menus>
-                <Menu mnemonicParsing="false" text="School Bell">
+                <Menu mnemonicParsing="false" text="Hakkında">
                     <items>
-                        <MenuItem onAction="#showAbout" mnemonicParsing="false" text="Hakkında"/>
+                        <MenuItem mnemonicParsing="false" onAction="#showAbout" text="Okul Zili"/>
                     </items>
                 </Menu>
             </menus>

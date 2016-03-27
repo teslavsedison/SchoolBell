@@ -76,13 +76,13 @@ public class SchoolBellDao {
         session.getTransaction().commit();
     }
 
-    public ArrayList<BellTime> getBellTimesByGivenDay(String dayName) {
+    public SchoolDay getBellTimesByGivenDay(String dayName) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         SchoolDay sd = (SchoolDay) session.createCriteria(SchoolDay.class)
                 .add(Restrictions.eq("dayName", dayName))
                 .uniqueResult();
         session.close();
-        return (ArrayList<BellTime>) sd.getBellTimes();
+        return sd;
     }
 }
 
