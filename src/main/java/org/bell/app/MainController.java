@@ -25,8 +25,10 @@ import org.bell.framework.TimeHHMMValidator;
 import org.bell.framework.TimeToStringConverter;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
-import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,9 +36,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -85,26 +85,6 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
-        job = JobBuilder.newJob(BellRingJob.class)
-                .withIdentity("BellRingJobName", "BellRingGroup")
-                .build();
-
-        trigger = TriggerBuilder
-                .newTrigger()
-                .withIdentity("BellRingTrigger", "BellRingGroup")
-                .withSchedule(SimpleScheduleBuilder
-                        .repeatMinutelyForever()
-                        .withIntervalInSeconds(60)
-                        .repeatForever())
-                .startAt(Date.from(Instant.now()))
-                .build();
-        try {
-            scheduler = new StdSchedulerFactory().getScheduler();
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
 
         DropShadow shadow = new DropShadow();
         validationSupport = new ValidationSupport();

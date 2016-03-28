@@ -1,6 +1,9 @@
 package org.bell.app;
 
+import com.sun.javafx.application.LauncherImpl;
 import impl.org.controlsfx.i18n.Localization;
+import it.sauronsoftware.junique.AlreadyLockedException;
+import it.sauronsoftware.junique.JUnique;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,11 +22,24 @@ import java.util.Locale;
 public class Main extends Application {
 
     public static void main(String[] args) {
-        launch(args);
+        String appId = "SchoolBell";
+        boolean alreadyRunning;
+        try {
+            JUnique.acquireLock(appId);
+            alreadyRunning = false;
+        } catch (AlreadyLockedException e) {
+//            e.printStackTrace();
+            alreadyRunning = true;
+        }
+        if (!alreadyRunning) {
+            LauncherImpl.launchApplication(Main.class, SchoolBellPreloader.class, args);
+            //launch(args);
+        }
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+//        SchedulerUtil.configure();
         setDb();
         Localization.setLocale(new Locale("tr-TR"));
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/MainView.fxml"));
@@ -100,8 +116,8 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        SchedulerUtil.shutdown();
         HibernateUtil.shutdown();
+        SchedulerUtil.shutdown();
         super.stop();
     }
 }

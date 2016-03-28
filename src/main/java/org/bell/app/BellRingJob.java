@@ -46,7 +46,7 @@ public class BellRingJob implements Job {
                 schoolDay = dao.getBellTimesByGivenDay(DayName.THURSDAY);
                 break;
             // Tekrar Cuma ya çevrilecek
-            case SUNDAY:
+            case FRIDAY:
                 schoolDay = dao.getBellTimesByGivenDay(DayName.FRIDAY);
                 break;
         }
@@ -56,12 +56,10 @@ public class BellRingJob implements Job {
                 if (bellTime.getTime().getHour() == LocalTime.now().getHour() &&
                         bellTime.getTime().getMinute() == LocalTime.now().getMinute()) {
                     mediaPlayer.play();
-                    while (true) {
-                        if (mediaPlayer.getCurrentTime().toSeconds() >= 20) {
+                    mediaPlayer.currentTimeProperty().addListener(observable -> {
+                        if (mediaPlayer.getCurrentTime().toSeconds() >= 25)
                             mediaPlayer.stop();
-                            break;
-                        }
-                    }
+                    });
                 }
             });
         }
