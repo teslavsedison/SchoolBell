@@ -246,6 +246,7 @@ public class MainController implements Initializable {
         fileChooser.setTitle("Bir mp3 seçiniz");
         fileChooser.getExtensionFilters().add(new ExtensionFilter("Audio Files", "*.mp3"));
         File file = fileChooser.showOpenDialog(gridPane.getScene().getWindow());
+//        file.getPath().replace("\\", "/");
         try {
             if (file != null) {
                 byte[] bytes = Files.readAllBytes(file.toPath());
@@ -256,9 +257,8 @@ public class MainController implements Initializable {
         }
     }
 
-    public void btnStartClicked(Event event) throws SchedulerException {
+    public void btnStartClicked(Event event) throws SchedulerException, IOException {
         if (Files.exists(Paths.get(FileNameConstants.MP3_FILE_NAME))) {
-            SchedulerUtil.configure();
             SchedulerUtil.start();
             btnStart.setDisable(true);
             btnStop.setDisable(false);
