@@ -35,7 +35,7 @@
       <element id="library" level="project" name="Maven: org.quartz-scheduler:quartz:2.2.2" />
       <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.7" />
       <element id="library" level="project" name="Maven: xml-apis:xml-apis:1.0.b2" />
-      <element id="library" level="project" name="Maven: com.badlogicgames.jlayer:jlayer:1.0.2-gdx" />
+      <element id="library" level="project" name="Maven: com.googlecode.soundlibs:jlayer:1.0.1-1" />
     </root>
   </artifact>
 </component>

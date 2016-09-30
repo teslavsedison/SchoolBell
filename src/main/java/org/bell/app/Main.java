@@ -44,9 +44,10 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("view/MainView.fxml"));
         primaryStage.setTitle("Okul Zili");
         primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("bell1.png")));
-        Scene scene = new Scene(root, 400, 520);
+        Scene scene = new Scene(root, 380, 520);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
+        //8SchoolBellPreloader.getPreloaderStage().close();
         primaryStage.show();
     }
 

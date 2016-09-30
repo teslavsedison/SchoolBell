@@ -19,12 +19,8 @@ import java.util.TimerTask;
 //@DisallowConcurrentExecution
 public class BellRingJob implements Job {
 
-    SchoolBellDao dao = null;
-    private AdvancedPlayer advancedPlayer;
-
-    public BellRingJob() {
-
-    }
+    private static AdvancedPlayer advancedPlayer;
+    private SchoolBellDao dao = null;
 
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
@@ -49,7 +45,6 @@ public class BellRingJob implements Job {
             case THURSDAY:
                 schoolDay = dao.getBellTimesByGivenDay(DayName.THURSDAY);
                 break;
-            // Tekrar Cuma ya çevrilecek
             case FRIDAY:
                 schoolDay = dao.getBellTimesByGivenDay(DayName.FRIDAY);
                 break;
@@ -57,45 +52,40 @@ public class BellRingJob implements Job {
 
         if (schoolDay != null && schoolDay.getBellTimes() != null) {
             for (BellTime bellTime : schoolDay.getBellTimes()) {
-                //                    Timer timer = new Timer();
-//                    TimerTask ts = new TimerTask() {
-//                        @Override
-//                        public void run() {
-//                            mediaPlayer.close();
-//                            mediaPlayer = null;
-//                            timer.cancel();
-//                            timer.purge();
-//                        }
-//                    };
-//
-//                    timer.schedule(ts, 0, 20);
                 if (bellTime.getTime().getHour() == LocalTime.now().getHour() && bellTime.getTime().getMinute() == LocalTime.now().getMinute()) {
-
-//                    Thread thread = new PlayerTask(mediaPlayer);
-//                    thread.start();
                     Timer tmr = new Timer();
-                    TimerTask timerTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            advancedPlayer.close();
-//                           // this.cancel();
-//                            tmr.cancel();
-//                            tmr.purge();
-                        }
-                    };
+                    PlayerTask playerTask = new PlayerTask(advancedPlayer);
+                    playerTask.start();
+                    PlayerStopTask playerStopTask = new PlayerStopTask(playerTask, advancedPlayer);
+                    tmr.schedule(playerStopTask, 0, 20 * 1000);
 
-                    tmr.schedule(timerTask, 20 * 1000, 0);
-                    try {
-                        advancedPlayer.play();
-                    } catch (JavaLayerException e) {
-                        e.printStackTrace();
-                    }
                 }
 
             }
         }
     }
 }
+
+class PlayerStopTask extends TimerTask {
+
+    private PlayerTask playerTask;
+    private AdvancedPlayer advancedPlayer;
+
+    public PlayerStopTask(PlayerTask playerTask, AdvancedPlayer advancedPlayer) {
+
+        this.playerTask = playerTask;
+        this.advancedPlayer = advancedPlayer;
+    }
+
+    @Override
+    public synchronized void run() {
+        System.out.println("Stop task started");
+        advancedPlayer.close();
+        playerTask.interrupt();
+        this.cancel();
+    }
+}
+
 
 class PlayerTask extends Thread {
 
@@ -107,30 +97,12 @@ class PlayerTask extends Thread {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
 
         while (!this.isInterrupted()) {
             try {
-                final boolean[] counter = {false};
-                TimerTask timerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (counter[0]) {
-                            advancedPlayer.close();
-                        }
-                        counter[0] = true;
-                    }
-                };
-                Timer tmr = new Timer();
-                tmr.schedule(timerTask, 0, 20 * 1000);
+                System.out.println("Player started");
                 advancedPlayer.play();
-
-//                LocalTime tme = LocalTime.now();
-//                int second = tme.getSecond();
-//                while (true) if () {
-//                    this.interrupt();
-//                    break;
-//                }
             } catch (JavaLayerException e) {
                 e.printStackTrace();
             }

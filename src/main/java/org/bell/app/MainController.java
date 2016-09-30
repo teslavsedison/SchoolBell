@@ -15,12 +15,13 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import javazoom.jl.decoder.JavaLayerException;
 import org.bell.dao.SchoolBellDao;
 import org.bell.entity.BellTime;
 import org.bell.entity.FileNameConstants;
 import org.bell.entity.SchoolDay;
+import org.bell.framework.BellControl;
 import org.bell.framework.IntegerRangeValidator;
-import org.bell.framework.SchedulerUtil;
 import org.bell.framework.TimeHHMMValidator;
 import org.bell.framework.TimeToStringConverter;
 import org.controlsfx.validation.ValidationSupport;
@@ -44,6 +45,7 @@ import java.util.ResourceBundle;
 import static javafx.scene.control.Alert.AlertType;
 
 public class MainController implements Initializable {
+
     @FXML
     public ComboBox<SchoolDay> cbDayList;
     @FXML
@@ -72,9 +74,9 @@ public class MainController implements Initializable {
     public Button btnStart;
     @FXML
     public Button btnStop;
+    BellControl bellControl;
     @FXML
     private Button btnClick;
-
     private SchoolBellDao dao = null;
     private ValidationSupport validationSupport;
     private List<SchoolDay> schoolDaysComputed;
@@ -88,6 +90,7 @@ public class MainController implements Initializable {
 
         DropShadow shadow = new DropShadow();
         validationSupport = new ValidationSupport();
+        //bellControl = new BellControl();
         btnStop.setDisable(true);
 
         dao = new SchoolBellDao();
@@ -257,9 +260,10 @@ public class MainController implements Initializable {
         }
     }
 
-    public void btnStartClicked(Event event) throws SchedulerException, IOException {
+    public void btnStartClicked(Event event) throws SchedulerException, IOException, JavaLayerException {
         if (Files.exists(Paths.get(FileNameConstants.MP3_FILE_NAME))) {
-            SchedulerUtil.start();
+
+            
             btnStart.setDisable(true);
             btnStop.setDisable(false);
         } else {
@@ -274,7 +278,8 @@ public class MainController implements Initializable {
     public void btnStopClicked(Event event) throws SchedulerException {
         btnStart.setDisable(false);
         btnStop.setDisable(true);
-        SchedulerUtil.pause();
+        bellControl.stop();
+        //SchedulerUtil.pause();
     }
 }
 
