@@ -15,13 +15,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
-import javazoom.jl.decoder.JavaLayerException;
 import org.bell.dao.SchoolBellDao;
 import org.bell.entity.BellTime;
 import org.bell.entity.FileNameConstants;
 import org.bell.entity.SchoolDay;
-import org.bell.framework.BellControl;
 import org.bell.framework.IntegerRangeValidator;
+import org.bell.framework.SchedulerUtil;
 import org.bell.framework.TimeHHMMValidator;
 import org.bell.framework.TimeToStringConverter;
 import org.controlsfx.validation.ValidationSupport;
@@ -74,7 +73,7 @@ public class MainController implements Initializable {
     public Button btnStart;
     @FXML
     public Button btnStop;
-    BellControl bellControl;
+    // BellControl bellControl;
     @FXML
     private Button btnClick;
     private SchoolBellDao dao = null;
@@ -260,10 +259,10 @@ public class MainController implements Initializable {
         }
     }
 
-    public void btnStartClicked(Event event) throws SchedulerException, IOException, JavaLayerException {
+    public void btnStartClicked(Event event) throws SchedulerException, IOException {
         if (Files.exists(Paths.get(FileNameConstants.MP3_FILE_NAME))) {
 
-            
+            SchedulerUtil.start();
             btnStart.setDisable(true);
             btnStop.setDisable(false);
         } else {
@@ -278,8 +277,8 @@ public class MainController implements Initializable {
     public void btnStopClicked(Event event) throws SchedulerException {
         btnStart.setDisable(false);
         btnStop.setDisable(true);
-        bellControl.stop();
-        //SchedulerUtil.pause();
+        //bellControl.stop();
+        SchedulerUtil.pause();
     }
 }
 

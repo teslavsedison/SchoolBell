@@ -1,25 +1,19 @@
 package org.bell.app;
 
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.advanced.AdvancedPlayer;
+import javafx.scene.media.MediaPlayer;
 import org.bell.dao.SchoolBellDao;
-import org.bell.entity.BellTime;
 import org.bell.entity.DayName;
 import org.bell.entity.SchoolDay;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
+import org.quartz.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Timer;
-import java.util.TimerTask;
 
 //@DisallowConcurrentExecution
-public class BellRingJob implements Job {
+public class BellRingJob implements InterruptableJob {
 
-    private static AdvancedPlayer advancedPlayer;
+    //private static AdvancedPlayer advancedPlayer;
+    MediaPlayer mediaPlayer;
     private SchoolBellDao dao = null;
 
     public void execute(JobExecutionContext context)
@@ -27,7 +21,7 @@ public class BellRingJob implements Job {
         System.out.println(LocalTime.now().toString());
         SchoolDay schoolDay = null;
         try {
-            advancedPlayer = (AdvancedPlayer) context.getScheduler().getContext().get("mp");
+            mediaPlayer = (MediaPlayer) context.getScheduler().getContext().get("mp");
             dao = (SchoolBellDao) context.getScheduler().getContext().get("dao");
         } catch (SchedulerException e) {
             e.printStackTrace();
@@ -51,62 +45,67 @@ public class BellRingJob implements Job {
         }
 
         if (schoolDay != null && schoolDay.getBellTimes() != null) {
-            for (BellTime bellTime : schoolDay.getBellTimes()) {
-                if (bellTime.getTime().getHour() == LocalTime.now().getHour() && bellTime.getTime().getMinute() == LocalTime.now().getMinute()) {
-                    Timer tmr = new Timer();
-                    PlayerTask playerTask = new PlayerTask(advancedPlayer);
-                    playerTask.start();
-                    PlayerStopTask playerStopTask = new PlayerStopTask(playerTask, advancedPlayer);
-                    tmr.schedule(playerStopTask, 0, 20 * 1000);
+            schoolDay.getBellTimes().forEach(bellTime -> {
+                if (bellTime.getTime().getHour() == LocalTime.now().getHour() &&
+                        bellTime.getTime().getMinute() == LocalTime.now().getMinute()) {
 
+                    mediaPlayer.play();
+                    mediaPlayer.currentTimeProperty().addListener(observable -> {
+                        if (mediaPlayer.getCurrentTime().toSeconds() >= 25)
+                            mediaPlayer.stop();
+                    });
                 }
-
-            }
+            });
         }
-    }
-}
-
-class PlayerStopTask extends TimerTask {
-
-    private PlayerTask playerTask;
-    private AdvancedPlayer advancedPlayer;
-
-    public PlayerStopTask(PlayerTask playerTask, AdvancedPlayer advancedPlayer) {
-
-        this.playerTask = playerTask;
-        this.advancedPlayer = advancedPlayer;
     }
 
     @Override
-    public synchronized void run() {
-        System.out.println("Stop task started");
-        advancedPlayer.close();
-        playerTask.interrupt();
-        this.cancel();
+    public void interrupt() throws UnableToInterruptJobException {
+        mediaPlayer.stop();
     }
 }
 
-
-class PlayerTask extends Thread {
-
-    private AdvancedPlayer advancedPlayer;
-
-    public PlayerTask(AdvancedPlayer advancedPlayer) {
-
-        this.advancedPlayer = advancedPlayer;
-    }
-
-    @Override
-    public synchronized void run() {
-
-        while (!this.isInterrupted()) {
-            try {
-                System.out.println("Player started");
-                advancedPlayer.play();
-            } catch (JavaLayerException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-}
-
+//class PlayerStopTask extends TimerTask {
+//
+//    private PlayerTask playerTask;
+//    private AdvancedPlayer advancedPlayer;
+//
+//    public PlayerStopTask(PlayerTask playerTask, AdvancedPlayer advancedPlayer) {
+//
+//        this.playerTask = playerTask;
+//        this.advancedPlayer = advancedPlayer;
+//    }
+//
+//    @Override
+//    public synchronized void run() {
+//        System.out.println("Stop task started");
+//        advancedPlayer.close();
+//        playerTask.interrupt();
+//        this.cancel();
+//    }
+//}
+//
+//
+//class PlayerTask extends Thread {
+//
+//    private AdvancedPlayer advancedPlayer;
+//
+//    public PlayerTask(AdvancedPlayer advancedPlayer) {
+//
+//        this.advancedPlayer = advancedPlayer;
+//    }
+//
+//    @Override
+//    public synchronized void run() {
+//
+//        while (!this.isInterrupted()) {
+//            try {
+//                System.out.println("Player started");
+//                advancedPlayer.play();
+//            } catch (JavaLayerException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+//}
+//

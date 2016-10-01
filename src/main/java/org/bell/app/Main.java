@@ -14,7 +14,6 @@ import org.bell.entity.SchoolDay;
 import org.bell.framework.HibernateUtil;
 import org.bell.framework.SchedulerUtil;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 import java.util.Locale;
 
@@ -55,63 +54,57 @@ public class Main extends Application {
         Session session = HibernateUtil
                 .getSessionFactory()
                 .openSession();
+        //session.beginTransaction().begin();
 
-        session.beginTransaction().begin();
-        Object result = null;
-        result = session.createCriteria(SchoolDay.class)
-                .add(Restrictions.eq("dayName", DayName.MONDAY))
-                .uniqueResult();
-        if (result == null) {
+        if (getSchoolDay(session, DayName.MONDAY) == null) {
             SchoolDay schoolDay = new SchoolDay();
             schoolDay.setDayName(DayName.MONDAY);
             session.save(schoolDay);
+            //session.beginTransaction().commit();
         }
-        session.beginTransaction().commit();
 
-        session.beginTransaction().begin();
-        result = session.createCriteria(SchoolDay.class)
-                .add(Restrictions.eq("dayName", DayName.TUESDAY))
-                .uniqueResult();
-        if (result == null) {
+
+        if (getSchoolDay(session, DayName.TUESDAY) == null) {
+            // session.beginTransaction().begin();
             SchoolDay schoolDay = new SchoolDay();
             schoolDay.setDayName(DayName.TUESDAY);
             session.save(schoolDay);
+            //session.beginTransaction().commit();
         }
-        session.beginTransaction().commit();
 
-        session.beginTransaction().begin();
-        result = session.createCriteria(SchoolDay.class)
-                .add(Restrictions.eq("dayName", DayName.WEDNESDAY))
-                .uniqueResult();
-        if (result == null) {
+        if (getSchoolDay(session, DayName.WEDNESDAY) == null) {
+            //session.beginTransaction().begin();
             SchoolDay schoolDay = new SchoolDay();
             schoolDay.setDayName(DayName.WEDNESDAY);
             session.save(schoolDay);
+            //session.beginTransaction().commit();
         }
-        session.beginTransaction().commit();
 
-        session.beginTransaction().begin();
-        result = session.createCriteria(SchoolDay.class)
-                .add(Restrictions.eq("dayName", DayName.THURSDAY))
-                .uniqueResult();
-        if (result == null) {
+
+        if (getSchoolDay(session, DayName.THURSDAY) == null) {
+            //session.beginTransaction().begin();
             SchoolDay schoolDay = new SchoolDay();
             schoolDay.setDayName(DayName.THURSDAY);
             session.save(schoolDay);
+            //session.beginTransaction().commit();
         }
-        session.beginTransaction().commit();
 
-        session.beginTransaction().begin();
-        result = session.createCriteria(SchoolDay.class)
-                .add(Restrictions.eq("dayName", DayName.FRIDAY))
-                .uniqueResult();
-        if (result == null) {
+
+        if (getSchoolDay(session, DayName.FRIDAY) == null) {
+            // session.beginTransaction().begin();
             SchoolDay schoolDay = new SchoolDay();
             schoolDay.setDayName(DayName.FRIDAY);
             session.save(schoolDay);
         }
         session.beginTransaction().commit();
         session.close();
+    }
+
+    private SchoolDay getSchoolDay(Session session, String dayName) {
+        SchoolDay sd = (SchoolDay) session.createQuery("from SchoolDay as sd where sd.dayName = :dayName")
+                .setParameter("dayName", dayName)
+                .uniqueResult();
+        return sd;
     }
 
     @Override

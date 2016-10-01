@@ -1,17 +1,16 @@
 package org.bell.framework;
 
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
-import javazoom.jl.player.advanced.AdvancedPlayer;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import org.bell.app.BellRingJob;
 import org.bell.dao.SchoolBellDao;
 import org.bell.entity.FileNameConstants;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Date;
 
@@ -19,14 +18,17 @@ import java.util.Date;
 public class SchedulerUtil {
 
     private static Scheduler scheduler;
+    private static boolean isConfigured = false;
+    private static SimpleTrigger trigger;
+    private static JobDetail job;
 
     public static void configure() throws SchedulerException, IOException {
-//        if (Files.exists(Paths.get(FileNameConstants.MP3_FILE_NAME))) {
-            JobDetail job = JobBuilder.newJob(BellRingJob.class)
+        if (Files.exists(Paths.get(FileNameConstants.MP3_FILE_NAME))) {
+            job = JobBuilder.newJob(BellRingJob.class)
                     .withIdentity("BellRingJobName", "BellRingGroup")
                     .build();
 
-            SimpleTrigger trigger = TriggerBuilder
+            trigger = TriggerBuilder
                     .newTrigger()
                     .withIdentity("BellRingTrigger", "BellRingGroup")
                     .withSchedule(SimpleScheduleBuilder
@@ -42,41 +44,47 @@ public class SchedulerUtil {
                     .build();
 
 
-        if (scheduler != null) {
+            if (scheduler != null) {
                 scheduler.clear();
                 scheduler = null;
             }
-        Player player = null;
             scheduler = new StdSchedulerFactory().getScheduler();
             scheduler.getContext().put("dao", new SchoolBellDao());
-            scheduler.scheduleJob(job, trigger);
+            MediaPlayer player = null;
+            Media media = new Media(Paths.get(FileNameConstants.MP3_FILE_NAME).toUri().toString());
+            scheduler.getContext().put("mp", new MediaPlayer(media));
+//        Media media = new Media(new File(FileNameConstants.MP3_FILE_NAME).toURI().toString());
+//        scheduler.getContext().put("mp", new MediaPlayer(media));
+            scheduler.getContext().put("mp", player);
+            scheduler.start();
+            isConfigured = true;
+        } else {
+            isConfigured = false;
+        }
+    }
+
+    public static boolean isConfigured() {
+        return isConfigured;
     }
 
     public static void start() throws SchedulerException {
-        AdvancedPlayer player = null;
-        try {
-            player = new AdvancedPlayer(Files.newInputStream(new File(FileNameConstants.MP3_FILE_NAME).toPath()));
-        } catch (JavaLayerException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //Media media = new Media(new File(FileNameConstants.MP3_FILE_NAME).toURI().toString());
-        //scheduler.getContext().put("mp", new MediaPlayer(media));
-        scheduler.getContext().put("mp", player);
-        if (!scheduler.isStarted() || scheduler.isInStandbyMode()) {
-            scheduler.start();
-//            System.out.println("Scheduler başladı");
-        }
+
+        scheduler.scheduleJob(job, trigger);
+
+//        if (!scheduler.isStarted() || scheduler.isInStandbyMode()) {
+//            scheduler.start();
+////            System.out.println("Scheduler başladı");
+//        }
     }
 
     public static void pause() throws SchedulerException {
-        if (scheduler.isStarted() || !scheduler.isInStandbyMode())
-            scheduler.standby();
+        scheduler.unscheduleJob(trigger.getKey());
+//        if (scheduler.isStarted() || !scheduler.isInStandbyMode())
+//            scheduler.standby();
     }
 
     public static void shutdown() throws SchedulerException {
-        if (scheduler != null && scheduler.isStarted())
+        if (scheduler != null)
             scheduler.shutdown(true);
     }
 

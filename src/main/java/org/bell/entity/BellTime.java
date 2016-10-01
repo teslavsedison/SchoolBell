@@ -26,6 +26,7 @@ public class BellTime {
     @JoinColumn(name = "SchoolDayId", nullable = false)
     private SchoolDay schoolDay;
 
+
     public LocalTime getTime() {
         return time;
     }
