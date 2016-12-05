@@ -4,16 +4,19 @@ import javafx.scene.media.MediaPlayer;
 import org.bell.dao.SchoolBellDao;
 import org.bell.entity.DayName;
 import org.bell.entity.SchoolDay;
-import org.quartz.*;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 //@DisallowConcurrentExecution
-public class BellRingJob implements InterruptableJob {
+public class BellRingJob implements Job {
 
     //private static AdvancedPlayer advancedPlayer;
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
     private SchoolBellDao dao = null;
 
     public void execute(JobExecutionContext context)
@@ -48,8 +51,9 @@ public class BellRingJob implements InterruptableJob {
             schoolDay.getBellTimes().forEach(bellTime -> {
                 if (bellTime.getTime().getHour() == LocalTime.now().getHour() &&
                         bellTime.getTime().getMinute() == LocalTime.now().getMinute()) {
-
+                    System.out.print("Media Player başlıyor.");
                     mediaPlayer.play();
+                    System.out.print("Media Player başladı.");
                     mediaPlayer.currentTimeProperty().addListener(observable -> {
                         if (mediaPlayer.getCurrentTime().toSeconds() >= 25)
                             mediaPlayer.stop();
@@ -57,11 +61,6 @@ public class BellRingJob implements InterruptableJob {
                 }
             });
         }
-    }
-
-    @Override
-    public void interrupt() throws UnableToInterruptJobException {
-        mediaPlayer.stop();
     }
 }
 

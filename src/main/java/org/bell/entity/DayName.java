@@ -6,4 +6,6 @@ public class DayName {
     public static String WEDNESDAY = "Çarşamba";
     public static String THURSDAY = "Perşembe";
     public static String FRIDAY = "Cuma";
+    public static String SATURDAY = "Cumartesi";
+    public static String SUNDAY = "Pazar";
 }

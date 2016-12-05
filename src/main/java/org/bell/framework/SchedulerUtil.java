@@ -50,12 +50,12 @@ public class SchedulerUtil {
             }
             scheduler = new StdSchedulerFactory().getScheduler();
             scheduler.getContext().put("dao", new SchoolBellDao());
-            MediaPlayer player = null;
+            // MediaPlayer player = null;
             Media media = new Media(Paths.get(FileNameConstants.MP3_FILE_NAME).toUri().toString());
             scheduler.getContext().put("mp", new MediaPlayer(media));
 //        Media media = new Media(new File(FileNameConstants.MP3_FILE_NAME).toURI().toString());
 //        scheduler.getContext().put("mp", new MediaPlayer(media));
-            scheduler.getContext().put("mp", player);
+            //scheduler.getContext().put("mp", player);
             scheduler.start();
             isConfigured = true;
         } else {
